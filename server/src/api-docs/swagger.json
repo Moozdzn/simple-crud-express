@@ -1,0 +1,363 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "Products - OpenAPI 3.0",
+		"version": "1.0.0"
+	},
+	"tags": [
+		{
+			"name": "products"
+		}
+	],
+	"paths": {
+		"/api/v1/products": {
+			"post": {
+				"tags": ["products"],
+				"summary": "Creates a new product",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Product"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"201": {
+						"description": "Product created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessApiResponseWithId"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Product already exists",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Failed to create product",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["products"],
+				"summary": "Fetch paginated product list",
+				"operationId": "findPetsByStatus",
+				"parameters": [
+					{
+						"name": "page",
+						"in": "query",
+						"description": "Current page",
+						"required": true,
+						"schema": {
+							"type": "number",
+							"default": 1
+						}
+					},
+					{
+						"name": "per_page",
+						"in": "query",
+						"description": "Number of results retrieved per page",
+						"required": true,
+						"schema": {
+							"type": "number",
+							"default": 20
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"products": {
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Product"
+											}
+										},
+										"meta": {
+											"type": "object",
+											"properties": {
+												"total": {
+													"type": "number",
+													"example": 100
+												},
+												"current_page": {
+													"type": "number",
+													"example": 2
+												},
+												"per_page": {
+													"type": "number",
+													"example": 20
+												},
+												"next_page_link": {
+													"type": "string",
+													"example": "(...)/api/v1/products?page=3&per_page=20"
+												},
+												"previous_page_link": {
+													"type": "string",
+													"example": "(...)/api/v1/products?page=1&per_page=20"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error parsing page or per_page",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/products/{id}": {
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"description": "ID of product",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"get": {
+				"tags": ["products"],
+				"summary": "Get product by id",
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Product"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Product not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["products"],
+				"summary": "Update an existing product by id",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProduct"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Product updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessApiResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Failed to parse request body or is empty",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Product not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["products"],
+				"summary": "Delete product",
+				"responses": {
+					"200": {
+						"description": "Product deleted",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessApiResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Product not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/FailedApiResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"UpdateProduct": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "Camera 12"
+					},
+					"description": {
+						"type": "string",
+						"example": "This is a brand new camera"
+					},
+					"category": {
+						"type": "string",
+						"example": "image"
+					}
+				}
+			},
+			"Product": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/UpdateProduct"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string",
+								"example": "camera-12"
+							}
+						}
+					}
+				]
+			},
+			"SuccessApiResponse": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"SuccessApiResponseWithId": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/SuccessApiResponse"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							}
+						}
+					}
+				]
+			},
+			"FailedApiResponse": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}
